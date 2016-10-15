@@ -13,6 +13,11 @@ NodeJS. You can find more information about best practices
 
 Logging is handled by Winston <https://www.npmjs.com/package/winston>
 
+You can change the default log level by setting the `LOG_LEVEL` environment
+variables.
+
+You can find more information on log levels [here](https://www.npmjs.com/package/winston#using-logging-levels).
+
 ## HTTP Server
 
 The HTTP server is a simple ExpressJS application.
