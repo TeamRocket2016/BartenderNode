@@ -7,6 +7,20 @@ ExpressJS is a micro-framework for service HTTP requests using
 NodeJS. You can find more information about best practices
 [here](https://expressjs.com/en/advanced/best-practice-performance.html).
 
+# Usage
+
+## After Initially Downloading
+
+Run `yarn` or `npm install` to download dependencies.
+
+## Starting Program
+
+Run `npm start`
+
+## Checking Code Against Style Guide
+
+Run `npm run lint`
+
 # Code
 
 ## Logging
