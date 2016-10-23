@@ -11,6 +11,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "nodemon api/index.js --exec babel-node",
+    "test-drinks": "nodemon api/drinks.js --exec babel-node",
     "lint": "eslint api/*.js"
   },
   "devDependencies": {
