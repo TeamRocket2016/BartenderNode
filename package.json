@@ -12,7 +12,8 @@
   "scripts": {
     "start": "nodemon api/index.js --exec babel-node",
     "test-drinks": "nodemon api/drinks.js --exec babel-node",
-    "lint": "eslint api/*.js"
+    "lint": "eslint api/*.js",
+    "lint-fix": "eslint --fix api/*.js"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
