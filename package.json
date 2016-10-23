@@ -11,7 +11,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "nodemon api/index.js --exec babel-node",
-    "lint": "eslint *.js"
+    "lint": "eslint api/*.js"
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
