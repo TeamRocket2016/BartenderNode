@@ -10,10 +10,7 @@ const app = express();
 // Use gzip compression (best practice)
 app.use(compression());
 
-app.get('/', (req, res) => {
-    logger.silly(`Got request to '/': ${req}`);
-    res.send('Hello World');
-});
+app.use(express.static('static'));
 
 app.listen(PORT, () => {
     logger.info(`Server started on port ${PORT}`);

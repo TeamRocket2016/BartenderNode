@@ -21,6 +21,13 @@ Run `npm start`
 
 Run `npm run lint`
 
+## Updating UI
+
+1. Download BartenderReact master branch
+2. Run `yarn run compile`
+3. Copy the contents of the BartenderReact `output` directory to the root of
+the BartenderNode `static` directory
+
 # Code
 
 ## Logging
@@ -39,7 +46,7 @@ The HTTP server is a simple ExpressJS application.
 ## JS Version
 
 Code is transpiled from ECMAScript 2015 using Babel
-(see .babelrc). 
+(see .babelrc).
 
 You can find an excellent style guide for the new features
 here <https://github.com/airbnb/javascript#ecmascript-6-es-2015-styles>
