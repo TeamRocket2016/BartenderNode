@@ -1,11 +1,11 @@
-const rp = require('request-promise');
+import rp from 'request-promise';
 // --------------------------------------------------------------------------
 // HELPER FUNCTIONS
 // --------------------------------------------------------------------------
 
 function checkType( type ) {
 	const possible = ['ordinary drink', 'cocktail', 'soft drink \/ soda', 'milk \/ float \/ shake', 'other\/unknown', 'cocoa','shot', 'coffee \/ tea', 'homemade liqueur', 'punch \/ party drink', 'beer']
-	
+
 	if (possible.indexOf(type.toLowerCase()) > -1) { return true; }
 	return false;
 }
@@ -77,7 +77,7 @@ function searchByIngredient( ingr ) {
 }
 
 // returns a promise for a list of drinks of the given type
-// if type does not match one of the necessary types, returns 
+// if type does not match one of the necessary types, returns
 // Promise object that will resolve to false
 function searchByType ( type ) {
 	if (checkType(type)) {
@@ -103,7 +103,7 @@ function searchByType ( type ) {
 function multiSearch ( params ) {
 	var url = 'http://www.thecocktaildb.com/api/json/v1/1/filter.php?';
 	if (params.hasOwnProperty('i')) {
-		for (param in params['i']) {
+		for (var param in params['i']) {
 			url = url + 'i=' + param + '&';
 		}
 	}
@@ -115,7 +115,7 @@ function multiSearch ( params ) {
 		}
 	}
 	if (params.hasOwnProperty('a')) {
-		if (params['a']) { 
+		if (params['a']) {
 			url = url + 'a=' + 'Alcoholic' + '&';
 		} else {
 			url = url + 'a=' + 'Non_Alcoholic' + '&';
@@ -139,8 +139,8 @@ function multiSearch ( params ) {
 function testRandom() {
 	randomDrink().then( function(res) {
 		console.log(res);
-	}, function(err) { 
-		console.log("Error resolving randDrink()"); 
+	}, function(err) {
+		console.log("Error resolving randDrink()");
 	});
 }
 
@@ -155,7 +155,7 @@ function testName() {
 		} else {
 			console.log("Search 'margarita': No results");
 		}
-	}, function(err) { 
+	}, function(err) {
 		console.log("Error resolving searchByName()");
 	});
 
@@ -230,16 +230,16 @@ function testMulti() {
 // MULTISEARCH TESTS
 // --------------------------------------------------------------------------
 	// several different sets of params
-	params1 = {
+	const params1 = {
 		'i': ['Gin'],
 		'a': true,
 		'c': 'shot'
 	}
-	params2 = {
+	const params2 = {
 		'c': 'asdlkfsad',
 		'a': false
 	}
-	params3 = {
+	const params3 = {
 		'i': ['Whiskey', 'Ice']
 	}
 	multiSearch(params1).then( function(res) {
