@@ -2,6 +2,7 @@
 
 import express from 'express';
 import compression from 'compression';
+import bodyParser from 'body-parser';
 import logger from './logging';
 
 const PORT = process.env.PORT || 8080;
@@ -10,6 +11,12 @@ const app = express();
 // Use gzip compression (best practice)
 app.use(compression());
 
+// Add support for JSON messages
+app.use(bodyParser.json());
+// Support URL-Encoded Messages
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Serve HTML/JS/CSS from static folder
 app.use(express.static('static'));
 
 const apiRouter = express();
@@ -26,9 +33,9 @@ apiRouter.post('/:sessionId/speechToText', (req, res) => {
 });
 
 apiRouter.post('/:sessionId/newMessage', (req, res) => {
-    logger.debug('Got new message'); //TODO: log details
+    logger.debug('Got new message:', req.params.sessionId, req.body.messageBody);
     //TODO
-    res.status(501).end();
+    res.send({messageBody: 'ACKFROMSERVER: TODO IMPLEMENTATION'});
 });
 
 // Register apiRouter to /api root adress
