@@ -4,8 +4,11 @@ import express from 'express';
 import compression from 'compression';
 import bodyParser from 'body-parser';
 import logger from './logging';
+import Conversation from './conversation';
 
 const PORT = process.env.PORT || 8080;
+
+const conversation = new Conversation();
 
 const app = express();
 // Use gzip compression (best practice)
@@ -34,8 +37,14 @@ apiRouter.post('/:sessionId/speechToText', (req, res) => {
 
 apiRouter.post('/:sessionId/newMessage', (req, res) => {
     logger.debug('Got new message:', req.params.sessionId, req.body.messageBody);
-    //TODO
-    res.send({messageBody: 'ACKFROMSERVER: TODO IMPLEMENTATION'});
+    conversation
+      .sendMessage(req.body.messageBody)
+      .then((reply)=>{
+          res.send({messageBody: reply});
+      })
+      .catch((error)=>{
+          logger.error('Conversation failure', req.body.messageBody, error);
+      });
 });
 
 // Register apiRouter to /api root adress
