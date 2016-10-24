@@ -12,10 +12,27 @@ app.use(compression());
 
 app.use(express.static('static'));
 
-app.get('/api', (req, res)=>{
-    logger.silly('Request to /api');
+const apiRouter = express();
+
+apiRouter.get('/', (req, res) => {
+    logger.silly('GET /api');
     res.send('API ONLINE');
 });
+
+apiRouter.post('/:sessionId/speechToText', (req, res) => {
+    logger.debug('Handling speech to text request'); //TODO: log details
+    //TODO: call speech to text service
+    res.status(501).end();
+});
+
+apiRouter.post('/:sessionId/newMessage', (req, res) => {
+    logger.debug('Got new message'); //TODO: log details
+    //TODO
+    res.status(501).end();
+});
+
+// Register apiRouter to /api root adress
+app.use('/api', apiRouter);
 
 app.listen(PORT, () => {
     logger.info(`Server started on port ${PORT}`);
