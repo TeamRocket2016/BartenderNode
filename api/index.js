@@ -12,6 +12,11 @@ app.use(compression());
 
 app.use(express.static('static'));
 
+app.get('/api', (req, res)=>{
+    logger.silly('Request to /api');
+    res.send('API ONLINE');
+});
+
 app.listen(PORT, () => {
     logger.info(`Server started on port ${PORT}`);
 });
