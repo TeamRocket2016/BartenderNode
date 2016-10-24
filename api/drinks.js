@@ -1,4 +1,5 @@
 import rp from 'request-promise';
+import logger from './logging';
 // --------------------------------------------------------------------------
 // HELPER FUNCTIONS
 // --------------------------------------------------------------------------
@@ -111,7 +112,7 @@ function multiSearch ( params ) {
         if (checkType(params['c'])) {
             url = url + 'c=' + params['c'] + '&';
         } else {
-            console.log('Multisearch given incorrect type (' + params['c'] + '), skipping in search');
+            logger.warn('Multisearch given incorrect type (' + params['c'] + '), skipping in search');
         }
     }
     if (params.hasOwnProperty('a')) {
@@ -121,7 +122,7 @@ function multiSearch ( params ) {
             url = url + 'a=' + 'Non_Alcoholic' + '&';
         }
     }
-    console.log('Created search term ' + url + ' from multisearch');
+    logger.info('Created search term ' + url + ' from multisearch');
 
     return rp( {
         url: url,
@@ -138,9 +139,9 @@ function multiSearch ( params ) {
 // --------------------------------------------------------------------------
 function testRandom() {
     randomDrink().then( function(res) {
-        console.log(res);
+        logger.info(res);
     }, function(err) {
-        console.log('Error resolving randDrink(): ' + err);
+        logger.error('Error resolving randDrink(): ' + err);
     });
 }
 
@@ -151,23 +152,23 @@ function testName() {
 	// test Search By Name with reasonable search term
     searchByName('margarita').then( function(res) {
         if (res) {
-            console.log(res[0]);
+            logger.info(res[0]);
         } else {
-            console.log('Search \'margarita\': No results');
+            logger.warn('Search \'margarita\': No results');
         }
     }, function(err) {
-        console.log('Error resolving searchByName(): ' + err);
+        logger.error('Error resolving searchByName(): ' + err);
     });
 
 	// test Search by Name with nonsense term
     searchByName('asldkasdf').then( function(res) {
         if (res) {
-            console.log(res[0]);
+            logger.info(res[0]);
         } else {
-            console.log('Search \'asldkasdf\': No results');
+            logger.warn('Search \'asldkasdf\': No results');
         }
     }, function(err) {
-        console.log('Error resolving searchByName():' + err);
+        logger.error('Error resolving searchByName():' + err);
     });
 }
 
@@ -178,23 +179,23 @@ function testIngr() {
 	// test searchByIngredient with reasonable term
     searchByIngredient('gin').then( function(res) {
         if (res) {
-            console.log(res[0]);
+            logger.info(res[0]);
         } else {
-            console.log('Search \'gin\': No results');
+            logger.warn('Search \'gin\': No results');
         }
     }, function(err) {
-        console.log('Error resolving searchByIngredient():' + err);
+        logger.error('Error resolving searchByIngredient():' + err);
     });
 
 	// test searchByIngredient with nonsense term
     searchByIngredient('asldfjas').then( function(res) {
         if (res) {
-            console.log(res[0]);
+            logger.info(res[0]);
         } else {
-            console.log('Search \'asldfjas\': No results');
+            logger.warn('Search \'asldfjas\': No results');
         }
     }, function(err) {
-        console.log('Error resolving searchByIngredient():' + err);
+        logger.error('Error resolving searchByIngredient():' + err);
     });
 }
 
@@ -205,23 +206,23 @@ function testType() {
 	// test searchByType with reasonable term
     searchByType('shot').then( function(res) {
         if (res) {
-            console.log(res[0]);
+            logger.info(res[0]);
         } else {
-            console.log('Search \'shot\': No results');
+            logger.warn('Search \'shot\': No results');
         }
     }, function(err) {
-        console.log('Error resolving searchByType():' + err);
+        logger.error('Error resolving searchByType():' + err);
     });
 
 	// test searchByType with nonsense term
     searchByType('asldfjas').then( function(res) {
         if (res) {
-            console.log(res[0]);
+            logger.info(res[0]);
         } else {
-            console.log('Search \'asldfjas\': No results');
+            logger.warn('Search \'asldfjas\': No results');
         }
     }, function(err) {
-        console.log('Error resolving searchByType():' + err);
+        logger.error('Error resolving searchByType():' + err);
     });
 }
 
@@ -244,32 +245,32 @@ function testMulti() {
     };
     multiSearch(params1).then( function(res) {
         if (res) {
-            console.log(res[0]);
+            logger.info(res[0]);
         } else {
-            console.log('Search params1: No results');
+            logger.warn('Search params1: No results');
         }
     }, function(err) {
-        console.log('Error resolving multiSearch():' + err);
+        logger.error('Error resolving multiSearch():' + err);
     });
 
     multiSearch(params2).then( function(res) {
         if (res) {
-            console.log(res[0]);
+            logger.info(res[0]);
         } else {
-            console.log('Search params2: No results');
+            logger.warn('Search params2: No results');
         }
     }, function(err) {
-        console.log('Error resolving multiSearch():' + err);
+        logger.error('Error resolving multiSearch():' + err);
     });
 
     multiSearch(params3).then( function(res) {
         if (res) {
-            console.log(res[0]);
+            logger.info(res[0]);
         } else {
-            console.log('Search params3: No results');
+            logger.warn('Search params3: No results');
         }
     }, function(err) {
-        console.log('Error resolving multiSearch():' + err);
+        logger.error('Error resolving multiSearch():' + err);
     });
 }
 
