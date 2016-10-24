@@ -21,6 +21,9 @@ export default class Conversation {
     }
     sendMessage(conversationId, messageBody){
         return new Promise((resolve, reject)=>{
+          if(messageBody === 'Ping'){
+            return resolve('Pong');
+          }
             bmConversation.message({
                 input: { text: messageBody },
                 context: {conversation_id: conversationId},
