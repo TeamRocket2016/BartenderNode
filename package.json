@@ -11,6 +11,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "nodemon api/index.js --exec babel-node",
+    "build": "babel api -d dist",
     "test-drinks": "nodemon api/drinks.js --exec babel-node",
     "lint": "eslint api/*.js",
     "lint-fix": "eslint --fix api/*.js"
