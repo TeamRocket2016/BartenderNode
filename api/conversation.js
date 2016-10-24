@@ -35,7 +35,7 @@ export default class Conversation {
             // Check conversation confidence level
             if(intents.length < 0 ||
               intents[0].confidence < MIN_CONFIDENCE) {
-                logger.verbose('Low confidence', response);
+                logger.verbose('Low confidence', messageBody, intents);
                 return resolve('Sorry, what did you want?');
             }
             // Check if we have dialog available
