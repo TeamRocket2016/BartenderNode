@@ -38,7 +38,7 @@ apiRouter.post('/:sessionId/speechToText', (req, res) => {
 apiRouter.post('/:sessionId/newMessage', (req, res) => {
     logger.debug('Got new message:', req.params.sessionId, req.body.messageBody);
     conversation
-      .sendMessage(req.body.messageBody)
+      .sendMessage(req.params.sessionId, req.body.messageBody)
       .then((reply)=>{
           res.send({messageBody: reply});
       })

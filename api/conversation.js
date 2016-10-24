@@ -19,10 +19,11 @@ export default class Conversation {
             return resolve(replyBody);
         });
     }
-    sendMessage(messageBody){
+    sendMessage(conversationId, messageBody){
         return new Promise((resolve, reject)=>{
             bmConversation.message({
                 input: { text: messageBody },
+                context: {conversation_id: conversationId},
                 workspace_id: '5a9e5db4-f0a8-4ecf-85b0-c14b681fd943',
             },
         (error, response)=> {
