@@ -24,26 +24,26 @@ const makeTextToSpeech = (messageBody) =>{
 
 // Save to temporary file
 const saveTextToSpeech = (messageBody) =>{
-  return new Promise((resolve, reject)=>{
-    const location = `audio/playback-${Math.floor(Math.random()*100)}.ogg`;
-    const fullLocation = `static/${location}`;
-    makeTextToSpeech(messageBody)
+    return new Promise((resolve, reject)=>{
+        const location = `audio/playback-${Math.floor(Math.random()*100)}.ogg`;
+        const fullLocation = `static/${location}`;
+        makeTextToSpeech(messageBody)
       .pipe(fs.createWriteStream(fullLocation))
       .on('finish',()=>{
-        resolve(location);
-        setTimeout(()=>{
-          fs.unlink(fullLocation,(error)=>{
-            if(error){
-              throw error;
-            }
-            logger.debug('Deleted file', fullLocation);
-          });
-        }, 5000);
+          resolve(location);
+          setTimeout(()=>{
+              fs.unlink(fullLocation,(error)=>{
+                  if(error){
+                      throw error;
+                  }
+                  logger.debug('Deleted file', fullLocation);
+              });
+          }, 5000);
       })
       .on('error', (error)=>{
-        reject(error);
+          reject(error);
       });
-  });
-}
+    });
+};
 
 export {speechToText, makeTextToSpeech, saveTextToSpeech};

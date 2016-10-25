@@ -1,6 +1,7 @@
 import ConversationV1 from 'watson-developer-cloud/conversation/v1';
 import logger from './logging';
 import {conversationCreds} from '../credentials/bluemix';
+import Enricher from './enrichment';
 
 const bmConversation = new ConversationV1({
     username: conversationCreds.username,
@@ -10,6 +11,8 @@ const bmConversation = new ConversationV1({
 
 const MIN_CONFIDENCE = .5;
 
+const enricher = new Enricher();
+
 export default class Conversation {
     constructor(){
         this.sendMessage = this.sendMessage.bind(this);
@@ -17,7 +20,7 @@ export default class Conversation {
     enrichReply(replyIntent, replyBody){
       //TODO: replace tokens, etc...
         return new Promise((resolve)=>{
-            return resolve(replyBody);
+            return resolve(enricher.enrichMessage(replyIntent, replyBody));
         });
     }
     sendMessage(conversationId, messageBody){
