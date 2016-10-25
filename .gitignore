@@ -1,3 +1,5 @@
+.DS_Store
+*.ogg
 # Build directory
 dist/
 # Logs

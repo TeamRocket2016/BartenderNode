@@ -5,16 +5,12 @@ import compression from 'compression';
 import bodyParser from 'body-parser';
 import logger from './logging';
 import Conversation from './conversation';
-import SpeechToText from 'watson-developer-cloud/speech-to-text/v1';
-import {speech2TextCreds} from '../credentials/bluemix';
+import {speechToText, makeTextToSpeech, saveTextToSpeech} from './speech';
+
 
 const PORT = process.env.PORT || 8080;
 
 const conversation = new Conversation();
-const speechToText = new SpeechToText({
-    username: speech2TextCreds.username,
-    password: speech2TextCreds.password
-});
 
 const app = express();
 // Use gzip compression (best practice)
@@ -36,7 +32,8 @@ apiRouter.get('/', (req, res) => {
 });
 
 apiRouter.post('/:sessionId/speechToText', (req, res) => {
-    logger.debug('Handling speech to text request'); //TODO: log details
+    logger.debug(`Handling speech to text request from
+      ${req.params.sessionId}`);
     req.pipe(speechToText.createRecognizeStream({
         content_type: 'audio/ogg;codecs=opus'
     }))
@@ -44,6 +41,15 @@ apiRouter.post('/:sessionId/speechToText', (req, res) => {
     .pipe(res)
     .on('error', (error)=> logger.error('S2T Send Error', error))
     .on('finish', ()=> logger.debug('Finished speech recognition request'));
+});
+
+apiRouter.post('/:sessionId/textToSpeech', (req, res)=>{
+    const messageBody = req.body.messageBody; //TODO why body?
+    logger.debug('Handling text to speech request', req.params.sessionId, messageBody);
+    //makeTextToSpeech(messageBody).pipe(res);
+    saveTextToSpeech(messageBody).then((url)=>{
+      res.send(url);
+    });//TODO: unhackify
 });
 
 apiRouter.post('/:sessionId/newMessage', (req, res) => {

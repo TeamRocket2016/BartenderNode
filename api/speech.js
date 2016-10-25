@@ -1,59 +1,49 @@
-import stt from 'watson-developer-cloud/speech-to-text/v1';
-import tts from 'watson-developer-cloud/text-to-speech/v1';
-import logger from './logging';
+import TextToSpeech from 'watson-developer-cloud/text-to-speech/v1';
+import SpeechToText from 'watson-developer-cloud/speech-to-text/v1';
 import fs from 'fs';
 import {speech2TextCreds} from '../credentials/bluemix';
 import {text2SpeechCreds} from '../credentials/bluemix';
-
-var speech2text = new stt({
-    'username': speech2TextCreds.username,
-    'password': speech2TextCreds.password
+import logger from './logging';
+const speechToText = new SpeechToText({
+    username: speech2TextCreds.username,
+    password: speech2TextCreds.password,
 });
 
-var text2speech = new tts({
-    'username': text2SpeechCreds.username,
-    'password': text2SpeechCreds.password
+const textToSpeech = new TextToSpeech({
+    username: text2SpeechCreds.username,
+    password: text2SpeechCreds.password,
 });
 
-
-// returns a stream, attach 'data' and 'end' event handlers
-function synthesizeText(someString, callback) {
-    return text2speech.synthesize({
-        text: someString,
-        voice: 'en-US_AllisonVoice', // Optional voice
-        accept: 'audio/wav' // default is audio/ogg; codec=opus
+const makeTextToSpeech = (messageBody) =>{
+    return textToSpeech.synthesize({
+        text: messageBody,
+        voice: 'en-US_AllisonVoice',
+        accept: 'audio/ogg;codecs=opus',
     });
+};
+
+// Save to temporary file
+const saveTextToSpeech = (messageBody) =>{
+  return new Promise((resolve, reject)=>{
+    const location = `audio/playback-${Math.floor(Math.random()*100)}.ogg`;
+    const fullLocation = `static/${location}`;
+    makeTextToSpeech(messageBody)
+      .pipe(fs.createWriteStream(fullLocation))
+      .on('finish',()=>{
+        resolve(location);
+        setTimeout(()=>{
+          fs.unlink(fullLocation,(error)=>{
+            if(error){
+              throw error;
+            }
+            logger.debug('Deleted file', fullLocation);
+          });
+        }, 5000);
+      })
+      .on('error', (error)=>{
+        reject(error);
+      });
+  });
 }
 
-var buffers = [];
-var x = synthesizeText('hello world');
-x.on('data', function(buffer) {
-    buffers.push(buffer);
-    //console.log(buffer);
-});
-x.on('end', function() {
-    console.log('done');
-});
-
-var y = synthesizeText('This is a test');
-y.pipe(fs.createWriteStream('test.wav'));
-
-function recognizeText(someAudioStream, callback) {
-    var params = {
-        audio: someAudioStream,
-        content_type: 'audio/l16; rate=44100'
-    };
-
-    speech2text.recognize(params, callback);
-}
-
-recognizeText(fs.createReadStream('man1_wb.wav'), (err, res) => {
-    if (err) {
-        console.log('no');
-        console.log(err);
-        logger.debug(err);
-    }
-    else {
-        console.log(JSON.stringify(res, null, 2));
-    }
-});
+export {speechToText, makeTextToSpeech, saveTextToSpeech};
