@@ -1,9 +1,10 @@
 import ConversationV1 from 'watson-developer-cloud/conversation/v1';
 import logger from './logging';
+import {conversationCreds} from '../credentials/bluemix';
 
 const bmConversation = new ConversationV1({
-    username: '61e2f236-635d-46b4-b695-f4d8f6d7af52',
-    password: 'iqwRiQNqHH3b',
+    username: conversationCreds.username,
+    password: conversationCreds.password,
     version_date: '2016-07-01'
 });
 
