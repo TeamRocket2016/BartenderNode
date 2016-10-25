@@ -13,6 +13,7 @@
     "start": "nodemon api/index.js --exec babel-node",
     "build": "babel api credentials -d dist",
     "test-drinks": "nodemon api/drinks.js --exec babel-node",
+    "test-speech": "nodemon api/speech.js --exec babel-node",
     "lint": "eslint api/*.js",
     "lint-fix": "eslint --fix api/*.js"
   },
