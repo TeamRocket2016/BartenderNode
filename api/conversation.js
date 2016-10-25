@@ -22,9 +22,9 @@ export default class Conversation {
     }
     sendMessage(conversationId, messageBody){
         return new Promise((resolve, reject)=>{
-          if(messageBody === 'Ping'){
-            return setTimeout(() => resolve('Pong'), 2000);
-          }
+            if(messageBody === 'Ping'){
+                return setTimeout(() => resolve('Pong'), 2000);
+            }
             bmConversation.message({
                 input: { text: messageBody },
                 context: {conversation_id: conversationId},
