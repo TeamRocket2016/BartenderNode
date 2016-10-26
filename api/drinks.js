@@ -274,10 +274,12 @@ function testMulti() {
     });
 }
 
-
+export {randomDrink, searchByIngredient, multiSearch};
+/*
 // call all the tests
 testRandom();
 testName();
 testIngr();
 testType();
 testMulti();
+*/

@@ -18,7 +18,10 @@ export default class Conversation {
         this.sendMessage = this.sendMessage.bind(this);
     }
     enrichReply(replyIntent, replyBody){
-        return enricher.enrichMessage(replyIntent, replyBody);
+        logger.debug('Intent', replyIntent);
+        const enrichedMessage = enricher.enrichMessage(replyIntent, replyBody);
+        logger.debug('Got enriched message', enrichedMessage);
+        return enrichedMessage;
     }
     sendMessage(conversationId, messageBody){
         return new Promise((resolve, reject)=>{

@@ -1,4 +1,5 @@
 import logger from './logging';
+import {randomDrink, searchByIngredient, multiSearch} from './drinks';
 
 function IntentAndMessage(intent, message){
     this.intent = intent;
@@ -9,6 +10,8 @@ export default class Enricher {
     constructor(){
         this.enrichMessage = this.enrichMessage.bind(this);
 
+        const paramRegex = /\{.*\}/;
+
     // Act on every message
         this.generalEnrichers = [
             function passThrough(intentAndMessagePromise){
@@ -16,6 +19,22 @@ export default class Enricher {
                     return intentAndMessage;
                 });
             }, //TODO: extend
+            function noWhiteSpace(intentAndMessagePromise){
+              return intentAndMessagePromise.then((intentAndMessage)=>{
+                intentAndMessage.noWhiteSpace = intentAndMessage.message.replace(/\n/g,'');
+                return intentAndMessage;
+              });
+            },
+            function getParams(intentAndMessagePromise){
+              return intentAndMessagePromise.then((intentAndMessage)=>{
+                const params = (paramRegex).exec(intentAndMessage.noWhiteSpace);
+                const MATCH_INDEX = 0;
+                if(params){
+                  intentAndMessage.params = JSON.parse(params[MATCH_INDEX]);
+                }
+                return intentAndMessage;
+              })
+            }
         ];
     // Enrichers that run on specific intents
         this.mappedEnrichers = {
@@ -25,6 +44,46 @@ export default class Enricher {
                         return intentAndMessage;
                     });
                 },
+            ],
+            'recommend-drink': [
+              function parseParameters(intentAndMessagePromise){
+                const singleSearchFuncs = {
+                  'alcoholic_drink': searchByIngredient
+                }
+                function searchSingle(searchKey, param){
+                  return singleSearchFuncs[searchKey](param);
+                }
+                return new Promise((resolve, reject)=>{
+                  intentAndMessagePromise.then((intentAndMessage)=>{
+                    if(!intentAndMessage.params){
+                      reject('No params for recommend-drink');
+                    }
+                    const params = intentAndMessage.params["recommend-drink"];
+                    const paramKeys = Object.keys(params);
+                    if(paramKeys.length == 1){
+                      const searchKey = paramKeys[0];
+                      const param = params[searchKey];
+                      logger.silly('Single param', param);
+                      searchSingle(searchKey, param)
+                        .then((searchResult)=>{
+                          const recommendation = (()=>{
+                            if(searchResult.length < 1){
+                              return '...not sure';
+                            }
+                            return searchResult.pop().strDrink;
+                          })();
+                          intentAndMessage.message = intentAndMessage.noWhiteSpace
+                            .replace(paramRegex, recommendation);
+                          logger.silly('New message', intentAndMessage, recommendation);
+                          resolve(intentAndMessage);
+                      });
+                    } else {
+                      logger.debug('Recommending drink based on', params);
+                      resolve(intentAndMessage);
+                    }
+                  });
+                });
+              }
             ],
         };
     }
@@ -38,12 +97,14 @@ export default class Enricher {
         }, initialIntentAndMessagePromise);
       // Get any mapped enrichers
         const intentEnrichers = this.mappedEnrichers[intent];
-        logger.debug('Using intent enrichers', intentEnrichers);
+        logger.silly('Using intent enrichers', intentEnrichers);
         if(intentEnrichers){
             return intentEnrichers.reduce((currentIntentAndMessage, enricher)=>{
                 return enricher(currentIntentAndMessage);
-            }, partialEnrichedIntentMessagePromise).then((intentAndMessage)=> intentAndMessage.message);
+            }, partialEnrichedIntentMessagePromise)
+            .then((intentAndMessage)=> intentAndMessage.message);
         }
-        return partialEnrichedIntentMessagePromise.then((intentAndMessage)=> intentAndMessage.message);
+        return partialEnrichedIntentMessagePromise
+          .then((intentAndMessage)=> intentAndMessage.message);
     }
 }
