@@ -28,7 +28,7 @@ export default class Conversation {
             bmConversation.message({
                 input: { text: messageBody },
                 context: {conversation_id: conversationId},
-                workspace_id: '5a9e5db4-f0a8-4ecf-85b0-c14b681fd943',
+                workspace_id: '40956776-c427-422f-9424-2d2adb5af413',
             },
         (error, response)=> {
             if(error){
