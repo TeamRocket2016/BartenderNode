@@ -20,6 +20,7 @@ export default class Conversation {
     enrichReply(replyIntent, replyBody){
         logger.debug('Intent', replyIntent);
         const enrichedMessage = enricher.enrichMessage(replyIntent, replyBody);
+        console.log('Enriched message', enrichedMessage);
         logger.debug('Got enriched message', enrichedMessage);
         return enrichedMessage;
     }

@@ -67,12 +67,14 @@ function searchByName( name ){
 // returns a promise for a list of drinks containing the given ingredient
 // check resolved result for null array
 function searchByIngredient( ingr ) {
+    logger.debug('Searcing for ingredient', ingr);
     return rp( {
         url: 'http://www.thecocktaildb.com/api/json/v1/1/filter.php?i=' + ingr,
         json: true
     }).then(function (res) {
         return res.drinks;
     }, function (err) {
+        logger.error('Ingredient search error', err);
         return err;
     });
 }
@@ -102,6 +104,7 @@ function searchByType ( type ) {
 //		c: type
 //		a: alcoholic (pass in as boolean)
 function multiSearch ( params ) {
+    logger.silly('Multi search on params', params);
     var url = 'http://www.thecocktaildb.com/api/json/v1/1/filter.php?';
     if (params.hasOwnProperty('i')) {
         for (var param in params['i']) {

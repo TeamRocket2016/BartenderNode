@@ -61,11 +61,13 @@ export default class Enricher {
                   logger.warn('Unable to find matching function for ', searchKey);
                   return randomDrink();
                 }
+                const failMessage = 'beer. I\'m not sure what you want';
                 return new Promise((resolve, reject)=>{
                   intentAndMessagePromise.then((intentAndMessage)=>{
                     function insertDrink(drink){
                       intentAndMessage.message = intentAndMessage.noWhiteSpace
                         .replace(paramRegex, drink);
+                      console.log('Final intent and message', intentAndMessage);
                       return intentAndMessage;
                     }
                     if(!intentAndMessage.params){
@@ -80,8 +82,8 @@ export default class Enricher {
                       searchSingle(searchKey, param)
                         .then((searchResult)=>{
                           const recommendation = (()=>{
-                            if(searchResult.length < 1){
-                              return '...not sure';
+                            if(!searchResult || searchResult.length < 1){
+                              return failMessage;
                             }
                             return searchResult.pop().strDrink;
                           })();
@@ -98,7 +100,27 @@ export default class Enricher {
                     } else {
                       logger.debug('Recommending drink based on', params);
                       //TODO!!! MULTI-SEARCH
-                      resolve(intentAndMessage);
+                      var searchParams = {};
+                      searchParams.i = [params.ingredient];
+                      searchParams.a = (()=>{
+                        const alcoParam = params['alcoholic-drink'];
+                        if(!alcoParam){
+                          return true; // Assume we want alcohol
+                        }
+                        return Boolean(alcoParam);
+                      })();
+                      //TODO: params.c
+                      multiSearch(searchParams).then((searchResult)=>{
+                        intentAndMessage = (()=>{
+                          if(!searchResult || searchResult.length < 1){
+                            intentAndMessage.message = 'Sorry try something else';
+                            return intentAndMessage;
+                          }
+                          return insertDrink(searchResult[0].strDrink);
+                        })();
+                        console.log('Intentandmessage', intentAndMessage);
+                        resolve(intentAndMessage);
+                      });
                     }
                   });
                 });
