@@ -5,7 +5,7 @@ import compression from 'compression';
 import bodyParser from 'body-parser';
 import logger from './logging';
 import Conversation from './conversation';
-import {speechToText, makeTextToSpeech, saveTextToSpeech} from './speech';
+import {speechToText, saveTextToSpeech} from './speech';
 
 
 const PORT = process.env.PORT || 8080;

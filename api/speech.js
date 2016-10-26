@@ -1,9 +1,9 @@
 import TextToSpeech from 'watson-developer-cloud/text-to-speech/v1';
 import SpeechToText from 'watson-developer-cloud/speech-to-text/v1';
 import fs from 'fs';
-import {speech2TextCreds} from '../credentials/bluemix';
-import {text2SpeechCreds} from '../credentials/bluemix';
+import {speech2TextCreds, text2SpeechCreds} from './credentials/bluemix';
 import logger from './logging';
+
 const speechToText = new SpeechToText({
     username: speech2TextCreds.username,
     password: speech2TextCreds.password,

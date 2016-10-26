@@ -1,6 +1,6 @@
 import ConversationV1 from 'watson-developer-cloud/conversation/v1';
 import logger from './logging';
-import {conversationCreds} from '../credentials/bluemix';
+import {conversationCreds} from './credentials/bluemix';
 import Enricher from './enrichment';
 
 const bmConversation = new ConversationV1({
