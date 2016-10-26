@@ -51,10 +51,20 @@ export default class Enricher {
                   'alcoholic_drink': searchByIngredient
                 }
                 function searchSingle(searchKey, param){
-                  return singleSearchFuncs[searchKey](param);
+                  const searchFunc = singleSearchFuncs[searchKey];
+                  if(searchFunc){
+                    return searchFunc(param);
+                  }
+                  logger.warn('Unable to find matching function for ', searchKey);
+                  return randomDrink();
                 }
                 return new Promise((resolve, reject)=>{
                   intentAndMessagePromise.then((intentAndMessage)=>{
+                    function insertDrink(drink){
+                      intentAndMessage.message = intentAndMessage.noWhiteSpace
+                        .replace(paramRegex, drink);
+                      return intentAndMessage;
+                    }
                     if(!intentAndMessage.params){
                       reject('No params for recommend-drink');
                     }
@@ -72,11 +82,15 @@ export default class Enricher {
                             }
                             return searchResult.pop().strDrink;
                           })();
-                          intentAndMessage.message = intentAndMessage.noWhiteSpace
-                            .replace(paramRegex, recommendation);
+                          intentAndMessage = insertDrink(recommendation);
                           logger.silly('New message', intentAndMessage, recommendation);
                           resolve(intentAndMessage);
                       });
+                    } else if(paramKeys.length < 1){
+                      randomDrink().then((drink)=>{
+                        const recommendation = `${drink.strDrink}: ${drink.strInstructions}`;
+                        resolve(insertDrink(recommendation));
+                      })
                     } else {
                       logger.debug('Recommending drink based on', params);
                       resolve(intentAndMessage);
