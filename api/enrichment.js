@@ -85,6 +85,7 @@ export default class Enricher {
                             }
                             return searchResult.pop().strDrink;
                           })();
+                          //TODO: get more drink details...
                           intentAndMessage = insertDrink(recommendation);
                           logger.silly('New message', intentAndMessage, recommendation);
                           resolve(intentAndMessage);
