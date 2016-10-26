@@ -47,9 +47,12 @@ export default class Enricher {
             ],
             'recommend-drink': [
               function parseParameters(intentAndMessagePromise){
+                // All singleSearchFuncs currently use same function
                 const singleSearchFuncs = {
-                  'alcoholic_drink': searchByIngredient
+                  'alcoholic_drink': searchByIngredient, // Not a mistake
+                  'ingredient': searchByIngredient, // Not a mistake
                 }
+                //TODO: MULTI-SEARCH FUNCTIONS
                 function searchSingle(searchKey, param){
                   const searchFunc = singleSearchFuncs[searchKey];
                   if(searchFunc){
@@ -93,6 +96,7 @@ export default class Enricher {
                       })
                     } else {
                       logger.debug('Recommending drink based on', params);
+                      //TODO!!! MULTI-SEARCH
                       resolve(intentAndMessage);
                     }
                   });
