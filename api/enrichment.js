@@ -11,35 +11,39 @@ export default class Enricher {
 
     // Act on every message
         this.generalEnrichers = [
-            function passThrough(intentAndMessage){
-                return intentAndMessage;
+            function passThrough(intentAndMessagePromise){
+                return intentAndMessagePromise.then((intentAndMessage)=>{
+                    return intentAndMessage;
+                });
             }, //TODO: extend
         ];
     // Enrichers that run on specific intents
         this.mappedEnrichers = {
             'greetings': [
-                function fakeEnricher(message){
-                    return message;
-                }, //TODO: extend/implement
+                function fakeEnricher(intentAndMessagePromise){
+                    return intentAndMessagePromise.then((intentAndMessage)=>{
+                        return intentAndMessage;
+                    });
+                },
             ],
         };
     }
 
     enrichMessage({intent, confidence}, message){
-        const initialIntentAndMessage = new IntentAndMessage(intent, message);
+        const initialIntentAndMessagePromise = Promise.resolve(new IntentAndMessage(intent, message));
         logger.debug('Enriching', intent, message);
-        const partialEnrichedIntentMessage = this.generalEnrichers
+        const partialEnrichedIntentMessagePromise = this.generalEnrichers
         .reduce((currentIntentAndMessage, enricher)=>{
             return enricher(currentIntentAndMessage);
-        }, initialIntentAndMessage);
+        }, initialIntentAndMessagePromise);
       // Get any mapped enrichers
         const intentEnrichers = this.mappedEnrichers[intent];
         logger.debug('Using intent enrichers', intentEnrichers);
         if(intentEnrichers){
-            return intentEnrichers.reduce((currentMesssage, enricher)=>{
-                return enricher(currentMesssage);
-            }, partialEnrichedIntentMessage.message);
+            return intentEnrichers.reduce((currentIntentAndMessage, enricher)=>{
+                return enricher(currentIntentAndMessage);
+            }, partialEnrichedIntentMessagePromise).then((intentAndMessage)=> intentAndMessage.message);
         }
-        return partialEnrichedIntentMessage.message;
+        return partialEnrichedIntentMessagePromise.then((intentAndMessage)=> intentAndMessage.message);
     }
 }

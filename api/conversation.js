@@ -18,10 +18,7 @@ export default class Conversation {
         this.sendMessage = this.sendMessage.bind(this);
     }
     enrichReply(replyIntent, replyBody){
-      //TODO: replace tokens, etc...
-        return new Promise((resolve)=>{
-            return resolve(enricher.enrichMessage(replyIntent, replyBody));
-        });
+        return enricher.enrichMessage(replyIntent, replyBody);
     }
     sendMessage(conversationId, messageBody){
         return new Promise((resolve, reject)=>{
