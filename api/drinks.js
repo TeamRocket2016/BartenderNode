@@ -51,6 +51,18 @@ function randomDrink() {
     });
 }
 
+// returns a promise for a specific Drink object given the drink id
+function getDrink( id ) {
+    return rp( {
+        url: "http://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=" + id,
+        json: true
+    }).then(function (res) {
+        return res.drinks[0];
+    }, function(err) {
+        return err;
+    })
+}
+
 // returns a promise that will resolve as the drink search results
 // check resolved result for null array (no results)
 function searchByName( name ){
