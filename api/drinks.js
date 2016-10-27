@@ -286,3 +286,46 @@ testIngr();
 testType();
 testMulti();
 */
+
+const ingredientsPromise = (() => {
+    const url = 'http://www.thecocktaildb.com/api/json/v1/1/list.php?i=list';
+    return rp(url)
+        .then((replyString)=>{
+            const replyObject = JSON.parse(replyString);
+            return replyObject.drinks
+                .map((ingredientObject)=>{
+                    return ingredientObject.strIngredient1;
+                })
+                .filter((ingredient)=>{
+                    if(!ingredient){
+                        return false;
+                    }
+                    return true;
+                })
+                .map((ingredient)=>{
+                    return ingredient.trim();
+                })
+                .filter((ingredient)=>{
+                    return ingredient.length > 0;
+                });
+        });
+})();
+
+function tokenizeIngredients(message){
+    function tokenizeIngredient(ingredient) {
+        return `{ingredient:${ingredient}}`;
+    }
+    return ingredientsPromise.then((ingredients)=>{
+        return ingredients.reduce((partialTokenized, ingredient) => {
+            return partialTokenized.replace(ingredient, tokenizeIngredient(ingredient));
+        }, message);
+    });
+}
+
+(() => {
+    const inputString = "I would like something with Dark rum and maybe some Gin";
+    tokenizeIngredients(inputString).then((tokenizedMessage)=>{
+        console.log('Tokenized Message', tokenizedMessage);
+    });
+})();
+
