@@ -149,6 +149,97 @@ function multiSearch ( params ) {
     });
 }
 
+function parseIngredients(drinkObject){
+  return Object.keys(drinkObject)
+  .filter((keyName)=>{
+    return keyName.indexOf('Ingredient') >= 0;
+  })
+  .map((keyName)=>{
+    return drinkObject[keyName];
+  })
+  .filter((ingredient)=> ingredient.trim().length > 0);
+}
+
+function Drink(drinkObject){
+  drinkObject = drinkObject || {};
+  this.name = drinkObject.strDrink;
+  this.ingredients = parseIngredients(drinkObject);
+  this.recipe = drinkObject.strInstructions;
+  this.thumbnail = drinkObject.strDrinkThumb;
+}
+
+// Combined drinks search
+function combinedSearch(searchParams){
+  const {drinkName, drinkType, drinkAlcoholic, drinkIngredient} = searchParams;
+  const funcMap = {
+    'drinkName': searchByName,
+    'drinkType': searchByType,
+    'drinkIngredient': function enhancedIngrSearch(ingredient){
+      return searchByIngredient(ingredient).then((drinkList)=>{
+        drinkList = drinkList || [];
+        const drinkPromises = drinkList.map((drink)=>{
+          return new Promise((resolve, reject)=>{
+            setTimeout(()=>{
+              getDrink(drink.idDrink).then((drinkObject)=>resolve(drinkObject));
+            }, Math.random() * 1000);
+          });
+        });
+        return Promise.all(drinkPromises).then((drinks)=>{
+          return drinks.filter((drink)=>{
+            const ingredients = parseIngredients(drink).map((ingr)=>ingr.toLowerCase());
+            return ingredients.indexOf(ingredient.toLowerCase()) >= 0;
+          });
+        });
+      });
+    },
+    'drinkAlcoholic': function(){ return randomDrink() } //HACK: no way to search by alcoholic or not
+  }
+  const searchParamNames = Object.keys(searchParams);
+  const numParams = searchParamNames.length;
+  if(numParams < 1){
+    return randomDrink().then((drinkObject)=>new Drink(drinkObject));
+  } else if(numParams == 1){
+    let searchParamName = searchParamNames[0];
+    let searchParam = searchParams[searchParamName];
+    return funcMap[searchParamName](searchParam).then((drinkList)=>{
+      drinkList = drinkList || [];
+      if(drinkList.length > 0){
+        return new Drink(drinkList[0])
+      }
+      return null;
+    });
+  } else {
+    return multiSearch({
+      i: drinkIngredient,
+      a: true, //HACK
+      c: drinkType
+    }).then((drinkList)=>{
+      if(drinkList && drinkList.length > 0){
+        return new Drink(drinkList[0]);
+      }
+      return null;
+    });
+  }
+}
+
+// Combined Drink Tests
+(function testCombinedSearch(){
+  // Random result
+  combinedSearch({}).then(function(result){console.log('Randsearch', result);});
+  // Single search by name
+  combinedSearch({drinkName: 'Balmoral'}).then((result)=>console.log('Name search', result));
+  combinedSearch({drinkName: '23ff'}).then((result)=>console.log('Bad name search', result));
+  // Single search by type
+  combinedSearch({drinkType: 'Ordinary Drink'}).then((result)=>
+console.log('Type search', result));
+  combinedSearch({drinkType: '23ff'}).then((result)=>console.log('Bad type search', result));
+  // Single search by ingredient
+  combinedSearch({drinkIngredient: 'Scotch'}).then((result)=>console.log('Scotch search', result));
+  combinedSearch({drinkIngredient: '101010'}).then((result)=>console.log('Bad ingredient search', result));
+  // Multi searches
+  combinedSearch({drinkType: 'Ordinary Drink', drinkName: '3-Mile Long Island Iced Tea'}).then((result)=>console.log('Name and type', result));
+})();
+
 // --------------------------------------------------------------------------
 // RANDOM DRINK TEST
 // --------------------------------------------------------------------------
