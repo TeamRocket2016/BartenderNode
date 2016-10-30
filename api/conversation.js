@@ -33,34 +33,34 @@ export default class Conversation {
                 context: {conversation_id: conversationId},
                 workspace_id: '4914c1f5-b44e-4604-be08-9d976b77c33a',
             },
-        (error, response)=> {
-            if(error){
-                return reject(error);
-            }
-            logger.debug('Got bluemix message', response);
-            const intents = response.intents;
-            const output = response.output.text;
-            // Check conversation confidence level
-            if(intents.length < 0 ||
-              intents[0].confidence < MIN_CONFIDENCE) {
-                logger.verbose('Low confidence', messageBody, intents);
-                return resolve('Sorry, what did you want?');
-            }
-            // Check if we have dialog available
-            if(output.length < 1) {
-                logger.warn('No output available for message', response);
-                return resolve('I can\'t help you with that right now');
-            }
-            // Apply enrichment to tokenized data
-            return this.enrichReply(intents[0], output[0])
-              .then((replyMessage)=>{
-                  resolve(replyMessage);
-              })
-              .catch((error)=>{
-                  logger.error('Enrichment failure', error);
-                  reject(error);
-              });
-        });
+            (error, response)=> {
+                if(error){
+                    return reject(error);
+                }
+                logger.debug('Got bluemix message', response);
+                const intents = response.intents;
+                const output = response.output.text;
+                // Check conversation confidence level
+                if(intents.length < 0 ||
+                intents[0].confidence < MIN_CONFIDENCE) {
+                    logger.verbose('Low confidence', messageBody, intents);
+                    return resolve('Sorry, what did you want?');
+                }
+                // Check if we have dialog available
+                if(output.length < 1) {
+                    logger.warn('No output available for message', response);
+                    return resolve('I can\'t help you with that right now');
+                }
+                // Apply enrichment to tokenized data
+                return this.enrichReply(intents[0], output[0])
+                .then((replyMessage)=>{
+                    resolve(replyMessage);
+                })
+                .catch((error)=>{
+                    logger.error('Enrichment failure', error);
+                    reject(error);
+                });
+            });
         });
     }
 }
