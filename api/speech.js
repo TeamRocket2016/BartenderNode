@@ -1,3 +1,4 @@
+import watson from 'watson-developer-cloud';
 import TextToSpeech from 'watson-developer-cloud/text-to-speech/v1';
 import SpeechToText from 'watson-developer-cloud/speech-to-text/v1';
 import fs from 'fs';
@@ -46,4 +47,25 @@ const saveTextToSpeech = (messageBody) =>{
     });
 };
 
-export {speechToText, makeTextToSpeech, saveTextToSpeech};
+const getTextToSpeechToken = () => {
+    return new Promise((resolve, reject)=>{
+        const ttsConfig = {
+            'url': 'https://stream.watsonplatform.net/text-to-speech/api',
+            'password': '83kxQCUQuws1',
+            'username': 'd1115bfd-ec0d-45eb-889e-857fae01c34d',
+            'version': 'v1'
+        };
+
+        var ttsAuthService = watson.authorization(ttsConfig);
+        ttsAuthService.getToken({url: ttsConfig.url}, (err, token)=>{
+            if (err) {
+                reject(err);
+            }
+            else {
+                resolve(token);
+            }
+        });
+    });
+}
+
+export {speechToText, makeTextToSpeech, saveTextToSpeech, getTextToSpeechToken};
