@@ -66,6 +66,6 @@ const getTextToSpeechToken = () => {
             }
         });
     });
-}
+};
 
 export {speechToText, makeTextToSpeech, saveTextToSpeech, getTextToSpeechToken};
