@@ -52,7 +52,6 @@ export default class Enricher {
                         'alcoholic_drink': searchByIngredient, // Not a mistake
                         'ingredient': searchByIngredient, // Not a mistake
                     };
-                //TODO: MULTI-SEARCH FUNCTIONS
                     function searchSingle(searchKey, param){
                         const searchFunc = singleSearchFuncs[searchKey];
                         if(searchFunc){
@@ -98,7 +97,6 @@ export default class Enricher {
                                 });
                             } else {
                                 logger.debug('Recommending drink based on', params);
-                      //TODO!!! MULTI-SEARCH
                                 var searchParams = {};
                                 searchParams.i = [params.ingredient];
                                 searchParams.a = (()=>{
