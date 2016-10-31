@@ -177,12 +177,12 @@ function enrichMessage(intent, message, context) {
             message = message.replace(/\{.*\}/, drink.name);
             message += '. ';
 
-            message += 'Here\'s how it\'s made: ' + drink.recipe + '.';
+            message += 'Here\'s how it\'s made: ' + drink.description + '.';
 
             //send message along
             return { 'message': message, 'context': context };
         }).catch(err) {
-            logger.warn("random drink description failed. error: ");
+            logger.warn("random drink description failed. error: " + err);
         };
     }
     return Promise.resolve({ 'message': message, 'context': context });
