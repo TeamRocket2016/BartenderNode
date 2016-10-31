@@ -241,6 +241,7 @@ function combinedSearch(searchParams){
 
 // Combined Drink Tests
 (function testCombinedSearch(){
+  return; //DISABLE
   // Random result
   combinedSearch({}).then(function(result){console.log('Randsearch', result);});
   // Single search by name
