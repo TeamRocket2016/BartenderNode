@@ -1,12 +1,12 @@
 import logger from './logging';
-import {randomDrink, searchByIngredient, multiSearch, combinedSearch} from './drinks';
+import {randomDrink, randomBeer, searchByIngredient, combinedSearch} from './drinks';
 
 function IntentAndMessage(intent, message){
     this.intent = intent;
     this.message = message;
 }
 
-function enrichMessage(intent, message, context, input) {
+function enrichMessage(intent, message, context) {
     if (context.hasOwnProperty('search')) {
         if (context.hasOwnProperty('ingredient')) {
             const ingredient = context.ingredient;
@@ -32,6 +32,18 @@ function enrichMessage(intent, message, context, input) {
                 //send message along
                 return { 'message': message, 'context': context };
             });
+        } else if (context.hasOwnProperty('beer')) {
+            return randomBeer().then (function(drink) {
+                //replace {0} in message with drinks
+                message = message.replace(/\{.*\}/, drink.name);
+                message += '. ';
+                if (drink.description) {
+                    message += drink.description + '.';
+                }
+
+                //send message along
+                return { 'message': message, 'context': context };
+            })
         }
     }
     else if (context.hasOwnProperty('random')) {
