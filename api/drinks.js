@@ -42,6 +42,9 @@ function searchBeer( query ) {
         url: 'https://api.brewerydb.com/v2/search?key=' + brewKey + '&q=' + query + '&type=beer',
         json: true
     }).then(function (res) {
+        if(res.data.length < 1){
+          return null;
+        }
         return new Beer(res.data[0]);
     }, function (err) {
         return err;
@@ -462,7 +465,7 @@ function testRandomBeer() {
     });
 }
 
-export {randomDrink, searchByIngredient, multiSearch, combinedSearch};
+export {randomBeer, searchBeer, searchByIngredient, combinedSearch};
 /*
 // call all the tests
 testRandom();

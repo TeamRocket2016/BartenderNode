@@ -1,12 +1,17 @@
 import logger from './logging';
-import {randomDrink, randomBeer, searchByIngredient, combinedSearch} from './drinks';
+import {
+  randomBeer,
+  searchBeer,
+  searchByIngredient,
+  combinedSearch
+} from './drinks';
 
 function IntentAndMessage(intent, message){
     this.intent = intent;
     this.message = message;
 }
 
-function enrichMessage(intent, message, context) {
+function enrichMessage(intent, message, context, input) {
     if (context.hasOwnProperty('search')) {
         if (context.hasOwnProperty('ingredient')) {
             const ingredient = context.ingredient;
@@ -21,10 +26,10 @@ function enrichMessage(intent, message, context) {
 
                 //replace {0} in message with drinks
                 message = message.replace(/\{.*\}/, drinksStr);
-                if (drink.description) { 
+                if (drink.description) {
                     message += 'Here\'s how it\'s made: ' + drink.description + '.';
                 }
-                
+
                 //clean up context
                 delete context.search;
                 delete context.ingredient;
@@ -32,18 +37,26 @@ function enrichMessage(intent, message, context) {
                 //send message along
                 return { 'message': message, 'context': context };
             });
-        } else if (context.hasOwnProperty('beer')) {
-            return randomBeer().then (function(drink) {
-                //replace {0} in message with drinks
-                message = message.replace(/\{.*\}/, drink.name);
-                message += '. ';
-                if (drink.description) {
-                    message += drink.description + '.';
+        } else if (context.search === 'beer') {
+            console.log('Beering'); //TODO: remove
+            function mkBeerMessage(drink) {
+                if(!drink){
+                    message = 'I can\'t find your beer, sorry.';
+                } else  {
+                    //replace {0} in message with drinks
+                    message = message.replace(/\{.*\}/, drink.name);
+                    message += '. ';
+                    if (drink.description) {
+                        message += drink.description + '.';
+                    }
                 }
-
                 //send message along
                 return { 'message': message, 'context': context };
-            })
+            }
+            if(context.random){
+              return randomBeer().then(mkBeerMessage);
+            }
+            return searchBeer(input).then(mkBeerMessage);
         }
     }
     else if (context.hasOwnProperty('random')) {
