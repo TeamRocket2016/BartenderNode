@@ -19,6 +19,7 @@ function Beer(beerObject) {
     beerObject = beerObject || {};
     this.name = beerObject.name;
     this.description = beerObject.description;
+    this.ingredients = [];
     this.type = beerObject.style.category.name || "Unknown";
     this.id = beerObject.id;
 }
@@ -198,8 +199,9 @@ function Drink(drinkObject){
   drinkObject = drinkObject || {};
   this.name = drinkObject.strDrink;
   this.ingredients = parseIngredients(drinkObject);
-  this.recipe = drinkObject.strInstructions;
-  this.thumbnail = drinkObject.strDrinkThumb;
+  this.description = drinkObject.strInstructions;
+  this.type = drinkObject.category;
+  this.id = drinkObject.id;
 }
 
 function getFullDrink(drinkObject){
