@@ -168,28 +168,51 @@ function Drink(drinkObject){
   this.thumbnail = drinkObject.strDrinkThumb;
 }
 
+function getFullDrink(drinkObject){
+  return new Promise((resolve, reject)=>{
+    setTimeout(()=>{
+      getDrink(drinkObject.idDrink).then((drinkObject)=>resolve(drinkObject));
+    }, Math.random() * 1000);
+  });
+}
+
 // Combined drinks search
 function combinedSearch(searchParams){
   const {drinkName, drinkType, drinkAlcoholic, drinkIngredient} = searchParams;
+  function enhancedSearch(func, param){
+    return func(param).then((drinkList)=>{
+      drinkList = drinkList || [];
+      if(drinkList.length > 0){
+        return getFullDrink(drinkList[0]).then((drinkObject)=>{
+          return new Drink(drinkObject);
+        });
+      }
+      return Promise.resolve(null);
+    })
+  }
   const funcMap = {
-    'drinkName': searchByName,
-    'drinkType': searchByType,
+    'drinkName': function(name){
+      return enhancedSearch(searchByName, name);
+    },
+    'drinkType': function(type){
+      return enhancedSearch(searchByType, type);
+    },
     'drinkIngredient': function enhancedIngrSearch(ingredient){
       return searchByIngredient(ingredient).then((drinkList)=>{
         drinkList = drinkList || [];
-        const drinkPromises = drinkList.map((drink)=>{
-          return new Promise((resolve, reject)=>{
-            setTimeout(()=>{
-              getDrink(drink.idDrink).then((drinkObject)=>resolve(drinkObject));
-            }, Math.random() * 1000);
-          });
-        });
+        const drinkPromises = drinkList.map(getFullDrink);
         return Promise.all(drinkPromises).then((drinks)=>{
           return drinks.filter((drink)=>{
             const ingredients = parseIngredients(drink).map((ingr)=>ingr.toLowerCase());
             return ingredients.indexOf(ingredient.toLowerCase()) >= 0;
           });
-        });
+        })
+        .then((drinks)=>{
+          if(drinks.length > 0){
+            return new Drink(drinks[0]);
+          }
+          return null;
+        })
       });
     },
     'drinkAlcoholic': function(){ return randomDrink() } //HACK: no way to search by alcoholic or not
@@ -201,13 +224,7 @@ function combinedSearch(searchParams){
   } else if(numParams == 1){
     let searchParamName = searchParamNames[0];
     let searchParam = searchParams[searchParamName];
-    return funcMap[searchParamName](searchParam).then((drinkList)=>{
-      drinkList = drinkList || [];
-      if(drinkList.length > 0){
-        return new Drink(drinkList[0])
-      }
-      return null;
-    });
+    return funcMap[searchParamName](searchParam);
   } else {
     return multiSearch({
       i: drinkIngredient,
@@ -230,8 +247,7 @@ function combinedSearch(searchParams){
   combinedSearch({drinkName: 'Balmoral'}).then((result)=>console.log('Name search', result));
   combinedSearch({drinkName: '23ff'}).then((result)=>console.log('Bad name search', result));
   // Single search by type
-  combinedSearch({drinkType: 'Ordinary Drink'}).then((result)=>
-console.log('Type search', result));
+  combinedSearch({drinkType: 'Ordinary Drink'}).then((result)=> console.log('Type search', result));
   combinedSearch({drinkType: '23ff'}).then((result)=>console.log('Bad type search', result));
   // Single search by ingredient
   combinedSearch({drinkIngredient: 'Scotch'}).then((result)=>console.log('Scotch search', result));
