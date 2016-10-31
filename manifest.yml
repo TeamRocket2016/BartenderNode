@@ -7,6 +7,6 @@ applications:
   host: cognitive-bartender
   disk_quota: 1024M
   services:
-  - Conversation-a4
+  - Conversation-bartender
   env:
-    WORKSPACE_ID: 15b460fb-231c-46b5-abaf-e379a922d645
+    WORKSPACE_ID: 4914c1f5-b44e-4604-be08-9d976b77c33a
