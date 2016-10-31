@@ -12,6 +12,40 @@ function checkType( type ) {
 }
 
 // --------------------------------------------------------------------------
+// BREWERY DB FUNCTIONS
+// --------------------------------------------------------------------------
+
+function Beer(beerObject) {
+    beerObject = beerObject || {};
+    this.name = beerObject.name;
+    this.description = beerObject.description;
+    this.type = beerObject.style.category.name || "Unknown";
+    this.id = beerObject.id;
+}
+
+function randomBeer() {
+    return rp({
+        url: 'https://api.brewerydb.com/v2/beer/random?key=' + brewKey,
+        json: true
+    }).then(function (res) {
+        return new Beer(res.data);
+    }, function (err) {
+        return err;
+    });
+}
+
+function searchBeer( query ) {
+    return rp({
+        url: 'https://api.brewerydb.com/v2/search?key=' + brewKey + '&q=' + query + '&type=beer',
+        json: true
+    }).then(function (res) {
+        return new Beer(res.data[0]);
+    }, function (err) {
+        return err;
+    });
+}
+
+// --------------------------------------------------------------------------
 // COCKTAIL DB FUNCTIONS
 // --------------------------------------------------------------------------
 
@@ -239,7 +273,10 @@ function combinedSearch(searchParams){
   }
 }
 
-// Combined Drink Tests
+// --------------------------------------------------------------------------
+// COMBINED DRINK TEST
+// --------------------------------------------------------------------------
+
 (function testCombinedSearch(){
   return; //DISABLE
   // Random result
@@ -394,6 +431,30 @@ function testMulti() {
         }
     }, function(err) {
         logger.error('Error resolving multiSearch():' + err);
+    });
+}
+
+// --------------------------------------------------------------------------
+// SEARCH BEER TEST
+// --------------------------------------------------------------------------
+
+function testSearchBeer() {
+    searchBeer('dogfish').then( function(res) {
+        logger.info(res);
+    }, function(err) {
+        logger.error('searchBeer error: ' + err);
+    })
+}
+
+// --------------------------------------------------------------------------
+// RANDOM BEER TEST
+// --------------------------------------------------------------------------
+
+function testRandomBeer() {
+    randomBeer().then( function(res) {
+        logger.info(res);
+    }, function(err) {
+        logger.error('getBeer error: ' + err);
     });
 }
 
