@@ -21,7 +21,10 @@ function enrichMessage(intent, message, context) {
 
                 //replace {0} in message with drinks
                 message = message.replace(/\{.*\}/, drinksStr);
-
+                if (drink.description) { 
+                    message += 'Here\'s how it\'s made: ' + drink.description + '.';
+                }
+                
                 //clean up context
                 delete context.search;
                 delete context.ingredient;
