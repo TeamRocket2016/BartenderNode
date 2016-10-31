@@ -1,7 +1,6 @@
 import ConversationV1 from 'watson-developer-cloud/conversation/v1';
 import logger from './logging';
 import {conversationCreds} from './credentials/bluemix';
-import Enricher from './enrichment';
 import {enrichMessage} from './enrichment';
 
 const bmConversation = new ConversationV1({
@@ -11,8 +10,6 @@ const bmConversation = new ConversationV1({
 });
 
 const MIN_CONFIDENCE = .5;
-
-const enricher = new Enricher();
 
 export default class Conversation {
     constructor(){
