@@ -2,6 +2,7 @@ import ConversationV1 from 'watson-developer-cloud/conversation/v1';
 import logger from './logging';
 import {conversationCreds} from './credentials/bluemix';
 import Enricher from './enrichment';
+import {enrichMessage} from './enrichment';
 
 const bmConversation = new ConversationV1({
     username: conversationCreds.username,
@@ -17,9 +18,9 @@ export default class Conversation {
     constructor(){
         this.sendMessage = this.sendMessage.bind(this);
     }
-    enrichReply(replyIntent, replyBody){
+    enrichReply(replyIntent, replyBody, context){
         logger.debug('Intent', replyIntent);
-        const enrichedMessage = enricher.enrichMessage(replyIntent, replyBody);
+        const enrichedMessage = enrichMessage(replyIntent, replyBody, context);
         logger.debug('Got enriched message', enrichedMessage);
         return enrichedMessage;
     }
@@ -37,22 +38,18 @@ export default class Conversation {
                 if(error){
                     return reject(error);
                 }
+                console.log(response);
                 logger.debug('Got bluemix message', response);
                 const intents = response.intents;
-                const output = response.output.text;
-                // Check conversation confidence level
-                if(intents.length < 0 ||
-                intents[0].confidence < MIN_CONFIDENCE) {
-                    logger.verbose('Low confidence', messageBody, intents);
-                    return resolve('Sorry, what did you want?');
-                }
+                const output = response.output.text.join(' ');
+                const context = response.context;
                 // Check if we have dialog available
                 if(output.length < 1) {
                     logger.warn('No output available for message', response);
                     return resolve('I can\'t help you with that right now');
                 }
                 // Apply enrichment to tokenized data
-                return this.enrichReply(intents[0], output[0])
+                return this.enrichReply(intents, output, context)
                 .then((replyMessage)=>{
                     resolve(replyMessage);
                 })

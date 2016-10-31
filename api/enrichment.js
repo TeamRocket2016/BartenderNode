@@ -145,3 +145,42 @@ export default class Enricher {
           .then((intentAndMessage)=> intentAndMessage.message);
     }
 }
+
+function enrichMessage(intent, message, context) {
+    if (context.hasOwnProperty('search')) {
+        if (context.hasOwnProperty('ingredient')) {
+            const ingredient = context.ingredient;
+            return searchByIngredient(ingredient).then((drinks)=>{
+                // use top 5
+                let someDrinks = drinks.slice(0, 5);
+                console.log(someDrinks);
+                let drinksStr = '';
+                for (let drink in someDrinks) {
+                    drinksStr += someDrinks[drink].strDrink;
+                    drinksStr += '; '
+                }
+
+                //replace {0} in message with drinks
+                message = message.replace(/\{.*\}/, drinksStr);
+
+                //send message along
+                return message;
+            });
+        }
+    }
+    else if (context.hasOwnProperty('random')) {
+        return randomDrink().then((drink)=>{
+            return randomDrink().then((drink)=>{
+                //replace {0} in message with drinks
+                message = message.replace(/\{.*\}/, drink.strDrink);
+                message += '.'
+
+                //send message along
+                return message;
+            });
+        });
+    }
+    return Promise.resolve(message);
+}
+
+export {enrichMessage};
