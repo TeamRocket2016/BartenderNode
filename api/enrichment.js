@@ -162,6 +162,10 @@ function enrichMessage(intent, message, context) {
                 //replace {0} in message with drinks
                 message = message.replace(/\{.*\}/, drinksStr);
 
+                //clean up context
+                delete context.search;
+                delete context.ingredient;
+
                 //send message along
                 return { 'message': message, 'context': context };
             });
@@ -172,6 +176,9 @@ function enrichMessage(intent, message, context) {
             //replace {0} in message with drinks
             message = message.replace(/\{.*\}/, drink.strDrink);
             message += '.';
+
+            //clean up context
+            delete context.random;
 
             //send message along
             return { 'message': message, 'context': context };
