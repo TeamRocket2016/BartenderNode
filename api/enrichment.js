@@ -172,18 +172,17 @@ function enrichMessage(intent, message, context) {
         }
     }
     else if (context.hasOwnProperty('random')) {
-        return combinedSearch({}).then((drink)=>{
+        return combinedSearch({}).then( function(drink) {
             //replace {0} in message with drinks
             message = message.replace(/\{.*\}/, drink.name);
             message += '. ';
-
-            message += 'Here\'s how it\'s made: ' + drink.description + '.';
+            if (drink.description) { 
+                message += 'Here\'s how it\'s made: ' + drink.description + '.';
+            }
 
             //send message along
             return { 'message': message, 'context': context };
-        }).catch(err) {
-            logger.warn("random drink description failed. error: " + err);
-        };
+        })
     }
     return Promise.resolve({ 'message': message, 'context': context });
 }
