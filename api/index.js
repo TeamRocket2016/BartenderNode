@@ -5,12 +5,15 @@ import compression from 'compression';
 import bodyParser from 'body-parser';
 import logger from './logging';
 import Conversation from './conversation';
-import {speechToText, saveTextToSpeech} from './speech';
+import {speechToText, saveTextToSpeech, getTextToSpeechToken} from './speech';
+import NodeCache from 'node-cache';
 
 
 const PORT = process.env.PORT || 8080;
 
 const conversation = new Conversation();
+
+const contextCache = new NodeCache({ stdTTL: 100, checkperiod: 120 });
 
 const app = express();
 // Use gzip compression (best practice)
@@ -54,10 +57,22 @@ apiRouter.post('/:sessionId/textToSpeech', (req, res)=>{
 
 apiRouter.post('/:sessionId/newMessage', (req, res) => {
     logger.debug('Got new message:', req.params.sessionId, req.body.messageBody);
+    const cacheKey = req.params.sessionId;
+    var cacheVal = contextCache.get(cacheKey);
+    if (cacheVal == undefined) {
+        contextCache.set(cacheKey, {conversation_id: cacheKey});
+        cacheVal = contextCache.get(cacheKey);
+    }
+    else {
+        cacheVal = contextCache.get(cacheKey);
+    }
     conversation
-      .sendMessage(req.params.sessionId, req.body.messageBody)
+      .sendMessage(cacheVal, req.body.messageBody)
       .then((reply)=>{
-          res.send({messageBody: reply});
+            getTextToSpeechToken().then((token) => {
+                contextCache.set(reply.context.conversation_id, reply.context);
+                res.send({messageBody: reply.message, tts: token});
+          });
       })
       .catch((error)=>{
           logger.error('Conversation failure', req.body.messageBody, error);

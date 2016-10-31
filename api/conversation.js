@@ -24,14 +24,14 @@ export default class Conversation {
         logger.debug('Got enriched message', enrichedMessage);
         return enrichedMessage;
     }
-    sendMessage(conversationId, messageBody){
+    sendMessage(contextVal, messageBody){
         return new Promise((resolve, reject)=>{
             if(messageBody === 'Ping'){
                 return setTimeout(() => resolve('Pong'), 2000);
             }
             bmConversation.message({
                 input: { text: messageBody },
-                context: {conversation_id: conversationId},
+                context: contextVal || {},
                 workspace_id: '4914c1f5-b44e-4604-be08-9d976b77c33a',
             },
             (error, response)=> {

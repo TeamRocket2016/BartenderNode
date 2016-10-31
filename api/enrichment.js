@@ -153,34 +153,31 @@ function enrichMessage(intent, message, context) {
             return searchByIngredient(ingredient).then((drinks)=>{
                 // use top 5
                 let someDrinks = drinks.slice(0, 5);
-                console.log(someDrinks);
                 let drinksStr = '';
                 for (let drink in someDrinks) {
                     drinksStr += someDrinks[drink].strDrink;
-                    drinksStr += '; '
+                    drinksStr += '; ';
                 }
 
                 //replace {0} in message with drinks
                 message = message.replace(/\{.*\}/, drinksStr);
 
                 //send message along
-                return message;
+                return { 'message': message, 'context': context };
             });
         }
     }
     else if (context.hasOwnProperty('random')) {
         return randomDrink().then((drink)=>{
-            return randomDrink().then((drink)=>{
-                //replace {0} in message with drinks
-                message = message.replace(/\{.*\}/, drink.strDrink);
-                message += '.'
+            //replace {0} in message with drinks
+            message = message.replace(/\{.*\}/, drink.strDrink);
+            message += '.';
 
-                //send message along
-                return message;
-            });
+            //send message along
+            return { 'message': message, 'context': context };
         });
     }
-    return Promise.resolve(message);
+    return Promise.resolve({ 'message': message, 'context': context });
 }
 
 export {enrichMessage};
