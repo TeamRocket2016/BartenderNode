@@ -15,9 +15,9 @@ export default class Conversation {
     constructor(){
         this.sendMessage = this.sendMessage.bind(this);
     }
-    enrichReply(replyIntent, replyBody, context){
+    enrichReply(replyIntent, replyBody, context, input){
         logger.debug('Intent', replyIntent);
-        const enrichedMessage = enrichMessage(replyIntent, replyBody, context);
+        const enrichedMessage = enrichMessage(replyIntent, replyBody, context, input);
         logger.debug('Got enriched message', enrichedMessage);
         return enrichedMessage;
     }
@@ -40,13 +40,14 @@ export default class Conversation {
                 const intents = response.intents;
                 const output = response.output.text.join(' ');
                 const context = response.context;
+                const input = response.input.text;
                 // Check if we have dialog available
                 if(output.length < 1) {
                     logger.warn('No output available for message', response);
                     return resolve('I can\'t help you with that right now');
                 }
                 // Apply enrichment to tokenized data
-                return this.enrichReply(intents, output, context)
+                return this.enrichReply(intents, output, context, input)
                 .then((replyMessage)=>{
                     resolve(replyMessage);
                 })

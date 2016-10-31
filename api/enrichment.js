@@ -6,7 +6,7 @@ function IntentAndMessage(intent, message){
     this.message = message;
 }
 
-function enrichMessage(intent, message, context) {
+function enrichMessage(intent, message, context, input) {
     if (context.hasOwnProperty('search')) {
         if (context.hasOwnProperty('ingredient')) {
             const ingredient = context.ingredient;
