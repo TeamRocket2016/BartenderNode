@@ -3,8 +3,8 @@ applications:
   memory: 256M
   instances: 1
   domain: mybluemix.net
-  name: cognitive-bartender
-  host: cognitive-bartender
+  name: cognitive-bartender2
+  host: cognitive-bartender2
   disk_quota: 1024M
   services:
   - Conversation-bartender
