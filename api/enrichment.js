@@ -1,5 +1,5 @@
 import logger from './logging';
-import {randomDrink, searchByIngredient, multiSearch} from './drinks';
+import {randomDrink, searchByIngredient, multiSearch, combinedSearch} from './drinks';
 
 function IntentAndMessage(intent, message){
     this.intent = intent;

@@ -460,7 +460,7 @@ function testRandomBeer() {
     });
 }
 
-export {randomDrink, searchByIngredient, multiSearch};
+export {randomDrink, searchByIngredient, multiSearch, combinedSearch};
 /*
 // call all the tests
 testRandom();
