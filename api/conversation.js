@@ -44,7 +44,7 @@ export default class Conversation {
                 // Check if we have dialog available
                 if(output.length < 1) {
                     logger.warn('No output available for message', response);
-                    return resolve('I can\'t help you with that right now');
+                    return resolve({ message: 'I can\'t help you with that right now', context: context });
                 }
                 // Apply enrichment to tokenized data
                 return this.enrichReply(intents, output, context, input)
