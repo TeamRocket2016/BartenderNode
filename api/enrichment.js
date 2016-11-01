@@ -6,11 +6,6 @@ import {
   combinedSearch
 } from './drinks';
 
-function IntentAndMessage(intent, message){
-    this.intent = intent;
-    this.message = message;
-}
-
 function enrichMessage(intent, message, context, input) {
     function cleanContext(dirtyContext){
       return {
@@ -32,9 +27,6 @@ function enrichMessage(intent, message, context, input) {
 
                 //replace {0} in message with drinks
                 message = message.replace(/\{.*\}/, drinksStr);
-                if (drink.description) {
-                    message += 'Here\'s how it\'s made: ' + drink.description + '.';
-                }
 
                 //send message along
                 return { 'message': message, 'context': cleanContext(context) };
