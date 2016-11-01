@@ -52,7 +52,10 @@ apiRouter.post('/:sessionId/textToSpeech', (req, res)=>{
     //makeTextToSpeech(messageBody).pipe(res);
     saveTextToSpeech(messageBody).then((url)=>{
         res.send(url);
-    });//TODO: unhackify
+    })
+    .catch((error)=>{
+      logger.error('TTS error', error);
+    });
 });
 
 apiRouter.post('/:sessionId/newMessage', (req, res) => {

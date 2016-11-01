@@ -49,10 +49,12 @@ function searchBeer( query ) {
         url: 'https://api.brewerydb.com/v2/search?key=' + brewKey + '&q=' + query + '&type=beer',
         json: true
     }).then(function (res) {
-        if(res.data.length < 1){
+        if(!res.data || res.data.length < 1){
           console.log('No result for query', query);
           return null;
         }
+        const beerObj = res.data[0];
+        console.log('beer object', beerObj);
         return new Beer(res.data[0]);
     }, function (err) {
       logger.error('Beer search error', err);

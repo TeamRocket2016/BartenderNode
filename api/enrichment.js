@@ -7,6 +7,7 @@ import {
 } from './drinks';
 
 function enrichMessage(intent, message, context, input) {
+    logger.silly('Enriching',  intent, message, context, input);
     function cleanContext(dirtyContext){
       return {
         system: dirtyContext.system,
@@ -14,6 +15,7 @@ function enrichMessage(intent, message, context, input) {
       };
     }
     if (context.hasOwnProperty('search')) {
+        console.log('Doing search');
         if (context.hasOwnProperty('ingredient')) {
             const ingredient = context.ingredient;
             return searchByIngredient(ingredient).then((drinks)=>{
@@ -54,13 +56,16 @@ function enrichMessage(intent, message, context, input) {
               console.log('Random beer');
               return randomBeer().then(mkBeerMessage);
             }
-            console.log('Searcing beer', input, mkBeerMessage);
+            console.log('Doing beer search', input);
             return searchBeer(input)
             .then(mkBeerMessage)
             .catch((error)=>{
               logger.error(`Failed to get beer ${error}`);
+              return {message: 'Error', context: cleanContext(context)};
             });
         }
+      // This code should never execute
+      throw 'Impossible code branch';
     }
     else if (context.hasOwnProperty('random')) {
         return combinedSearch({}).then( function(drink) {
