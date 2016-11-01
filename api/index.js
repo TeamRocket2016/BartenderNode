@@ -68,11 +68,14 @@ apiRouter.post('/:sessionId/newMessage', (req, res) => {
     }
     conversation
       .sendMessage(cacheVal, req.body.messageBody)
-      .then((reply)=>{
-            getTextToSpeechToken().then((token) => {
-                contextCache.set(reply.context.conversation_id, reply.context);
-                res.send({messageBody: reply.message, tts: token});
-          });
+      .catch((error)=>{
+        logger.error('Send message error', error);
+      })
+      .then(({context, message})=>{
+        if(context){
+          contextCache.set(context.conversation_id, context);
+        }
+        res.send({messageBody: message});
       })
       .catch((error)=>{
           logger.error('Conversation failure', req.body.messageBody, error);

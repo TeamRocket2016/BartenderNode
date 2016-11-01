@@ -12,6 +12,12 @@ function IntentAndMessage(intent, message){
 }
 
 function enrichMessage(intent, message, context, input) {
+    function cleanContext(dirtyContext){
+      return {
+        system: dirtyContext.system,
+        conversation_id: dirtyContext.conversation_id,
+      };
+    }
     if (context.hasOwnProperty('search')) {
         if (context.hasOwnProperty('ingredient')) {
             const ingredient = context.ingredient;
@@ -30,17 +36,14 @@ function enrichMessage(intent, message, context, input) {
                     message += 'Here\'s how it\'s made: ' + drink.description + '.';
                 }
 
-                //clean up context
-                delete context.search;
-                delete context.ingredient;
-
                 //send message along
-                return { 'message': message, 'context': context };
+                return { 'message': message, 'context': cleanContext(context) };
             });
         } else if (context.search === 'beer') {
             console.log('Beering'); //TODO: remove
             function mkBeerMessage(drink) {
                 if(!drink){
+                    logger.warn('Unable to find drink', input);
                     message = 'I can\'t find your beer, sorry.';
                 } else  {
                     //replace {0} in message with drinks
@@ -48,15 +51,23 @@ function enrichMessage(intent, message, context, input) {
                     message += '. ';
                     if (drink.description) {
                         message += drink.description + '.';
+                    }else{
+                      console.log('No description for beer', drink);
                     }
                 }
                 //send message along
-                return { 'message': message, 'context': context };
+                return { 'message': message, 'context': cleanContext(context) };
             }
             if(context.random){
+              console.log('Random beer');
               return randomBeer().then(mkBeerMessage);
             }
-            return searchBeer(input).then(mkBeerMessage);
+            console.log('Searcing beer', input, mkBeerMessage);
+            return searchBeer(input)
+            .then(mkBeerMessage)
+            .catch((error)=>{
+              logger.error(`Failed to get beer ${error}`);
+            });
         }
     }
     else if (context.hasOwnProperty('random')) {
@@ -69,10 +80,10 @@ function enrichMessage(intent, message, context, input) {
             }
 
             //send message along
-            return { 'message': message, 'context': context };
+            return { 'message': message, 'context': cleanContext(context) };
         })
     }
-    return Promise.resolve({ 'message': message, 'context': context });
+    return Promise.resolve({ 'message': message, 'context': cleanContext(context) });
 }
 
 export {enrichMessage};
